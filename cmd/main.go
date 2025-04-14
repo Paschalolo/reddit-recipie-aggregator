@@ -8,6 +8,6 @@ import (
 func main() {
 
 	router := gin.Default()
-	router.GET("/", ginHandler.HomeHandler)
+	router.POST("/recipes", ginHandler.NewRecipeHandler)
 	router.Run(":8081")
 }
