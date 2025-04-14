@@ -76,6 +76,28 @@ func (h *Handler) ListRecipeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, list)
 }
 
+// @Summary Return recipes by id
+// @Description Return a recipe that contains a specific id.
+// @Produce json
+// @Param id path string true "ID of the recipe to list"
+// @Accept json
+// @Param recipe body pkg.Recipe true "Recipe object to be updated"
+// @Success 200 {object} pkg.Recipe
+// @Failure 400 {object} map[string]string "Invalid request payload"
+// @Failure 404 {object} map[string]string "Recipe not found"
+// @Router /recipes/{id} [get]
+func (h *Handler) ListOneRecipeHandler(c *gin.Context) {
+	id := c.Param("id")
+	list, err := h.App.ListOneRecipe(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, list)
+}
+
 // @Summary Update recipes by id
 // @Description Update a recipe that contains a specific id.
 // @Produce json

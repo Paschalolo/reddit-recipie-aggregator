@@ -15,6 +15,7 @@ var (
 type Repository interface {
 	AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	GetRecipe(ctx context.Context) (*[]pkg.Recipe, error)
+	GetOneRecipe(ctx context.Context, id string) (*pkg.Recipe, error)
 	BulkAddRecipe(*[]pkg.Recipe) error
 	UpdateRecipe(ctx context.Context, id string, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	DeleteRecipe(ctx context.Context, id string) bool

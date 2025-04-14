@@ -38,6 +38,7 @@ func Module(router *gin.RouterGroup) {
 	router.POST("/recipes", Handler.NewRecipeHandler)
 	router.GET("/recipes", Handler.ListRecipeHandler)
 	router.GET("/recipes/search", Handler.SearchRecipeHandler)
+	router.GET("/recipes/:id", Handler.ListOneRecipeHandler)
 	router.PUT("/recipes/:id", Handler.UpdateRecipeHandler)
 	router.DELETE("/recipes/:id", Handler.DeleteRecipeHandler)
 }

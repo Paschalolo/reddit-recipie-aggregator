@@ -105,6 +105,42 @@ paths:
               type: string
             type: object
       summary: Delete recipes by id
+    get:
+      consumes:
+      - application/json
+      description: Return a recipe that contains a specific id.
+      parameters:
+      - description: ID of the recipe to list
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Recipe object to be updated
+        in: body
+        name: recipe
+        required: true
+        schema:
+          $ref: '#/definitions/pkg.Recipe'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pkg.Recipe'
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Recipe not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Return recipes by id
     put:
       consumes:
       - application/json

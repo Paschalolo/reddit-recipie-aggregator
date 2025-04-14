@@ -28,6 +28,15 @@ func (r *Repository) AddRecipe(_ context.Context, recipe *pkg.Recipe) (*pkg.Reci
 func (r *Repository) GetRecipe(_ context.Context) (*[]pkg.Recipe, error) {
 	return &r.Recipe, nil
 }
+func (r *Repository) GetOneRecipe(ctx context.Context, id string) (*pkg.Recipe, error) {
+	for _, recipe := range r.Recipe {
+		if recipe.ID == id {
+			return &recipe, nil
+		}
+	}
+	return nil, repository.ErrNotFound
+}
+
 func (r *Repository) BulkAddRecipe(Recipes *[]pkg.Recipe) error {
 	r.Recipe = append(r.Recipe, *Recipes...)
 	return nil

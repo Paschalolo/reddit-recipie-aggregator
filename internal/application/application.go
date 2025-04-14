@@ -11,6 +11,7 @@ import (
 type App interface {
 	AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	ListRecipe(ctx context.Context) (*[]pkg.Recipe, error)
+	ListOneRecipe(ctx context.Context, id string) (*pkg.Recipe, error)
 	UpdateRecipe(ctx context.Context, id string, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	DeleteRecipe(ctx context.Context, id string) bool
 	SearchRecipe(ctx context.Context, tag string) (*[]pkg.Recipe, error)
@@ -36,6 +37,14 @@ func (r *Application) AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.R
 }
 func (r *Application) ListRecipe(ctx context.Context) (*[]pkg.Recipe, error) {
 	list, err := r.repo.GetRecipe(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (r *Application) ListOneRecipe(ctx context.Context, id string) (*pkg.Recipe, error) {
+	list, err := r.repo.GetOneRecipe(ctx, id)
 	if err != nil {
 		return nil, err
 	}
