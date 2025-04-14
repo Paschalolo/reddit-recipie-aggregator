@@ -33,4 +33,5 @@ func Module(router *gin.Engine) {
 	Handler := http.NewHandler(*App)
 	router.POST("/recipes", Handler.NewRecipeHandler)
 	router.GET("/recipes", Handler.ListRecipeHandler)
+	router.PUT("/recipes/:id", Handler.UpdateRecipeHandler)
 }

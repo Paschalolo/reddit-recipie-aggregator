@@ -11,6 +11,7 @@ import (
 type App interface {
 	AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	ListRecipe(ctx context.Context) (*[]pkg.Recipe, error)
+	UpdateRecipe(ctx context.Context, id string, recipe *pkg.Recipe) (*pkg.Recipe, error)
 }
 type Application struct {
 	repo repository.Repository
@@ -37,4 +38,13 @@ func (r *Application) ListRecipe(ctx context.Context) (*[]pkg.Recipe, error) {
 		return nil, err
 	}
 	return list, nil
+}
+
+func (r *Application) UpdateRecipe(ctx context.Context, id string, recipe *pkg.Recipe) (*pkg.Recipe, error) {
+	rec, err := domain.UpdateRecipe(recipe)
+	if err != nil {
+		return nil, err
+	}
+	return r.repo.UpdateRecipe(ctx, id, rec)
+
 }

@@ -12,3 +12,7 @@ func AddRecipe(recipe *pkg.Recipe) (*pkg.Recipe, error) {
 	recipe.PublishedAt = time.Now()
 	return recipe, nil
 }
+func UpdateRecipe(recipe *pkg.Recipe) (*pkg.Recipe, error) {
+	recipe.PublishedAt = time.Now()
+	return recipe, nil
+}
