@@ -45,3 +45,23 @@ func (h *Handler) ListRecipeHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, list)
 }
+
+func (h *Handler) UpdateRecipeHandler(c *gin.Context) {
+	id := c.Param("id")
+	var Recipe pkg.Recipe
+	if err := c.ShouldBindJSON(&Recipe); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	rec, err := h.App.UpdateRecipe(c.Request.Context(), id, &Recipe)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, rec)
+
+}
