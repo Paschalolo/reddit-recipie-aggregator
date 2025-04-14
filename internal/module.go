@@ -12,4 +12,5 @@ func Module(router *gin.Engine) {
 	App := application.New(repo)
 	Handler := http.NewHandler(*App)
 	router.POST("/recipes", Handler.NewRecipeHandler)
+	router.GET("/recipes", Handler.ListRecipeHandler)
 }

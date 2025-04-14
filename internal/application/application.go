@@ -10,6 +10,7 @@ import (
 
 type App interface {
 	AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error)
+	ListRecipe(ctx context.Context) (*[]pkg.Recipe, error)
 }
 type Application struct {
 	repo repository.Repository
@@ -29,4 +30,11 @@ func (r *Application) AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.R
 		return nil, err
 	}
 	return rec, nil
+}
+func (r *Application) ListRecipe(ctx context.Context) (*[]pkg.Recipe, error) {
+	list, err := r.repo.GetRecipe(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
