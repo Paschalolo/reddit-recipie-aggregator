@@ -1,13 +1,12 @@
 package main
 
 import (
-	ginHandler "github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/http"
+	recipeRouter "github.com/Paschalolo/reddit-recipie-aggregator/internal"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-
 	router := gin.Default()
-	router.POST("/recipes", ginHandler.NewRecipeHandler)
+	recipeRouter.Module(router)
 	router.Run(":8081")
 }

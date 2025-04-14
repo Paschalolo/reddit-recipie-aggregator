@@ -3,12 +3,34 @@ package http
 import (
 	"net/http"
 
+	"github.com/Paschalolo/reddit-recipie-aggregator/internal/application"
 	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"github.com/gin-gonic/gin"
 )
 
-// Home function Handler
-func HomeHandler(c *gin.Context) {
-	s := &pkg.JsonFormat{Name: "Paschal", Age: 89}
-	c.JSON(http.StatusOK, s)
+type Handler struct {
+	App application.Application
+}
+
+func NewHandler(App application.Application) *Handler {
+	return &Handler{App: App}
+}
+func (h *Handler) NewRecipeHandler(c *gin.Context) {
+	var Recipe pkg.Recipe
+	if err := c.ShouldBindJSON(&Recipe); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	rec, err := h.App.AddRecipe(c.Request.Context(), &Recipe)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, rec)
+
 }
