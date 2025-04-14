@@ -9,6 +9,6 @@ import (
 
 // Home function Handler
 func HomeHandler(c *gin.Context) {
-	s := &pkg.JsonFormat{Name: "Paschal", Age: 89}
+	s := &pkg.Recipe{Name: "Paschal"}
 	c.JSON(http.StatusOK, s)
 }
