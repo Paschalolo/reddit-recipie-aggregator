@@ -27,3 +27,7 @@ func (r *Repository) AddRecipe(_ context.Context, recipe *pkg.Recipe) (*pkg.Reci
 func (r *Repository) GetRecipe(_ context.Context) (*[]pkg.Recipe, error) {
 	return &r.Recipe, nil
 }
+func (r *Repository) BulkAddRecipe(Recipes *[]pkg.Recipe) error {
+	r.Recipe = append(r.Recipe, *Recipes...)
+	return nil
+}

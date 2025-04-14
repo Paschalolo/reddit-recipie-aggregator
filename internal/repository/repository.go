@@ -9,4 +9,5 @@ import (
 type Repository interface {
 	AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	GetRecipe(ctx context.Context) (*[]pkg.Recipe, error)
+	BulkAddRecipe(*[]pkg.Recipe) error
 }
