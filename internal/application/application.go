@@ -13,6 +13,7 @@ type App interface {
 	ListRecipe(ctx context.Context) (*[]pkg.Recipe, error)
 	UpdateRecipe(ctx context.Context, id string, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	DeleteRecipe(ctx context.Context, id string) bool
+	SearchRecipe(ctx context.Context, tag string) (*[]pkg.Recipe, error)
 }
 type Application struct {
 	repo repository.Repository
@@ -52,4 +53,8 @@ func (r *Application) UpdateRecipe(ctx context.Context, id string, recipe *pkg.R
 
 func (r *Application) DeleteRecipe(ctx context.Context, id string) bool {
 	return r.repo.DeleteRecipe(ctx, id)
+}
+
+func (r *Application) SearchRecipe(ctx context.Context, tag string) (*[]pkg.Recipe, error) {
+	return r.repo.SearchRecipe(ctx, tag)
 }

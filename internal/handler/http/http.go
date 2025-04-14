@@ -79,3 +79,17 @@ func (h *Handler) DeleteRecipeHandler(c *gin.Context) {
 		"message": "message has been deleted ",
 	})
 }
+
+func (h *Handler) SearchRecipeHandler(c *gin.Context) {
+	tag := c.Query("tag")
+	recipe, err := h.App.SearchRecipe(c.Request.Context(), tag)
+	if err != nil {
+
+		c.JSON(http.StatusNotFound, gin.H{
+
+			"message": err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, recipe)
+
+}

@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("id not found in repo ")
+	ErrNotFound       = errors.New("id not found in repo ")
+	ErrSearchNotFound = errors.New("no tags found of that category ")
 )
 
 type Repository interface {
@@ -17,4 +18,5 @@ type Repository interface {
 	BulkAddRecipe(*[]pkg.Recipe) error
 	UpdateRecipe(ctx context.Context, id string, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	DeleteRecipe(ctx context.Context, id string) bool
+	SearchRecipe(ctx context.Context, tag string) (*[]pkg.Recipe, error)
 }

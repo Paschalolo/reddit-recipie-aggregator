@@ -64,3 +64,20 @@ func (r *Repository) DeleteRecipe(_ context.Context, id string) bool {
 	}
 	return false
 }
+
+func (r *Repository) SearchRecipe(ctx context.Context, tag string) (*[]pkg.Recipe, error) {
+	var search []pkg.Recipe
+
+	for i, recipe := range r.Recipe {
+		for _, t := range recipe.Tags {
+			if t == tag {
+				search = append(search, r.Recipe[i])
+			}
+		}
+	}
+	if len(search) < 1 {
+		return nil, repository.ErrSearchNotFound
+	}
+	return &search, nil
+
+}
