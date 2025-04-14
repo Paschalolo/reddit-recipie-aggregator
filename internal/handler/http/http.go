@@ -65,3 +65,17 @@ func (h *Handler) UpdateRecipeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, rec)
 
 }
+
+func (h *Handler) DeleteRecipeHandler(c *gin.Context) {
+	id := c.Param("id")
+	ok := h.App.DeleteRecipe(c.Request.Context(), id)
+	if !ok {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "no recipe in the repository",
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "message has been deleted ",
+	})
+}

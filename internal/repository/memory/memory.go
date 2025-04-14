@@ -2,6 +2,7 @@ package memory
 
 import (
 	"context"
+	"slices"
 
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
 	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
@@ -52,4 +53,14 @@ func (r *Repository) UpdateRecipe(_ context.Context, id string, recipe *pkg.Reci
 		}
 	}
 	return nil, repository.ErrNotFound
+}
+
+func (r *Repository) DeleteRecipe(_ context.Context, id string) bool {
+	for i, recipe := range r.Recipe {
+		if recipe.ID == id {
+			r.Recipe = slices.Delete(r.Recipe, i, i+1)
+			return true
+		}
+	}
+	return false
 }
