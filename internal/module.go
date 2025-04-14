@@ -5,12 +5,15 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/Paschalolo/reddit-recipie-aggregator/docs"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/application"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/http"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/memory"
 	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func AddBulkRecipe(repo repository.Repository) {
@@ -26,11 +29,12 @@ func AddBulkRecipe(repo repository.Repository) {
 		log.Fatalln("could not save file ", err.Error())
 	}
 }
-func Module(router *gin.Engine) {
+func Module(router *gin.RouterGroup) {
 	repo := memory.NewRepository()
 	AddBulkRecipe(repo)
 	App := application.New(repo)
 	Handler := http.NewHandler(*App)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.POST("/recipes", Handler.NewRecipeHandler)
 	router.GET("/recipes", Handler.ListRecipeHandler)
 	router.GET("/recipes/search", Handler.SearchRecipeHandler)

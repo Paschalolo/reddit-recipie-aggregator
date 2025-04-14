@@ -8,6 +8,7 @@ import (
 func main() {
 
 	router := gin.Default()
-	recipeRouter.Module(router)
+	apiV1 := router.Group("/api/v1")
+	recipeRouter.Module(apiV1)
 	router.Run(":8081")
 }
