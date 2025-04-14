@@ -34,3 +34,14 @@ func (h *Handler) NewRecipeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, rec)
 
 }
+
+func (h *Handler) ListRecipeHandler(c *gin.Context) {
+	list, err := h.App.ListRecipe(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, list)
+}

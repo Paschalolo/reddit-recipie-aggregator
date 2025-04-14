@@ -19,7 +19,11 @@ func NewRepository() *Repository {
 	}
 }
 
-func (r *Repository) AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error) {
+func (r *Repository) AddRecipe(_ context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error) {
 	r.Recipe = append(r.Recipe, *recipe)
 	return recipe, nil
+}
+
+func (r *Repository) GetRecipe(_ context.Context) (*[]pkg.Recipe, error) {
+	return &r.Recipe, nil
 }
