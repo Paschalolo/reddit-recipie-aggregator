@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	ErrNotFound       = errors.New("id not found in repo ")
-	ErrSearchNotFound = errors.New("no tags found of that category ")
+	ErrNotFound        = errors.New("id not found in repo ")
+	ErrSearchNotFound  = errors.New("no tags found of that category ")
+	ErrNothingToUpdate = errors.New("there is nothing to update ")
 )
 
 type Repository interface {

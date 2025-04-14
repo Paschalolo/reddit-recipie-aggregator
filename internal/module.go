@@ -9,11 +9,12 @@ import (
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/application"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/http"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
-	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/memory"
+	mongoRepo "github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/mongo"
 	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func AddBulkRecipe(repo repository.Repository) {
@@ -29,9 +30,11 @@ func AddBulkRecipe(repo repository.Repository) {
 		log.Fatalln("could not save file ", err.Error())
 	}
 }
-func Module(router *gin.RouterGroup) {
-	repo := memory.NewRepository()
-	AddBulkRecipe(repo)
+func Module(router *gin.RouterGroup, client *mongo.Client) {
+	repo := mongoRepo.NewMongoDB(client)
+	// defer repo.CloseDB()
+	// AddBulkRecipe(repo)
+
 	App := application.New(repo)
 	Handler := http.NewHandler(*App)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
