@@ -10,6 +10,7 @@ import (
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/http"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
 	mongoRepo "github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/mongo"
+	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/redis"
 	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -34,8 +35,8 @@ func Module(router *gin.RouterGroup, client *mongo.Client) {
 	repo := mongoRepo.NewMongoDB(client)
 	// defer repo.CloseDB()
 	// AddBulkRecipe(repo)
-
-	App := application.New(repo)
+	cache := redis.NewRedis(repo)
+	App := application.New(repo, cache)
 	Handler := http.NewHandler(*App)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.POST("/recipes", Handler.NewRecipeHandler)
