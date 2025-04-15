@@ -15,7 +15,9 @@ var (
 	ErrNotInCache      = errors.New("cache is empty  ")
 )
 
+// This is The Repository interface implementation
 type Repository interface {
+	// AddRecipe adds a pecipe to the data
 	AddRecipe(ctx context.Context, recipe *pkg.Recipe) (*pkg.Recipe, error)
 	GetRecipe(ctx context.Context) (*[]pkg.Recipe, error)
 	GetOneRecipe(ctx context.Context, id string) (*pkg.Recipe, error)
@@ -25,10 +27,15 @@ type Repository interface {
 	SearchRecipe(ctx context.Context, tag string) (*[]pkg.Recipe, error)
 }
 
+// This is the Cache Repository impplemntation
+// Cache is currently set to have a lifetime of 20 minutes
+// except the Delete function is invoked and cache is cleared
 type CacheRepo interface {
 
 	// Get returns a string of cached data and error
 	// if Cache is not available Get will automatically make a call to the database
 	Get(ctx context.Context, key string) (string, error)
+
+	// Delete removes thecache located in the key position
 	Delete(ctx context.Context, key string)
 }

@@ -15,7 +15,6 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func AddBulkRecipe(repo repository.Repository) {
@@ -31,9 +30,8 @@ func AddBulkRecipe(repo repository.Repository) {
 		log.Fatalln("could not save file ", err.Error())
 	}
 }
-func Module(router *gin.RouterGroup, client *mongo.Client) {
-	repo := mongoRepo.NewMongoDB(client)
-	// defer repo.CloseDB()
+func Run(router *gin.RouterGroup) {
+	repo := mongoRepo.NewMongoDB()
 	// AddBulkRecipe(repo)
 	cache := redis.NewRedis(repo)
 	App := application.New(repo, cache)

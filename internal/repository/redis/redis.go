@@ -43,7 +43,7 @@ func (c *Redis) Get(ctx context.Context, key string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		duration := time.Minute * 10
+		duration := time.Minute * 20
 		log.Println("Putting data in the cache")
 		c.cache.Set(ctx, key, data, duration)
 		return "", repository.ErrNotInCache
