@@ -69,7 +69,7 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 		return
 	}
 
-	expirationTime := time.Now().Add(10 * time.Minute)
+	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &claims{
 		Username: user.Username,
 		StandardClaims: jwt.StandardClaims{
@@ -118,7 +118,7 @@ func (h *AuthHandler) RefreshHandler(c *gin.Context) {
 		})
 		return
 	}
-	expirationTime := time.Now().Add(time.Minute * 10)
+	expirationTime := time.Now().Add(time.Hour * 24)
 	claims.ExpiresAt = expirationTime.Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
@@ -136,5 +136,7 @@ func (h *AuthHandler) RefreshHandler(c *gin.Context) {
 }
 
 func (h *AuthHandler) SignOutHandler(c *gin.Context) {
-	// sign out on the frontend
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Remove token in Authorization Header ",
+	})
 }

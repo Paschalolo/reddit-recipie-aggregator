@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
+	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -57,4 +58,29 @@ func (c *Redis) Get(ctx context.Context, key string) (string, error) {
 func (c *Redis) Delete(ctx context.Context, key string) {
 	log.Println("Deleteing cache")
 	c.cache.Del(ctx, key)
+}
+
+func (c *Redis) PutCookie(ctx context.Context, user string, token *pkg.CookieAuthUser) error {
+	duration := time.Until(token.Expires)
+	data, err := json.Marshal(token)
+	if err != nil {
+		return err
+	}
+	log.Println("putting cookie")
+	c.cache.Set(ctx, user, data, duration)
+	return nil
+}
+func (c *Redis) GetCookie(ctx context.Context, user string) (*pkg.CookieAuthUser, error) {
+	var cookie pkg.CookieAuthUser
+	value, err := c.cache.Get(ctx, user).Result()
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal([]byte(value), &cookie); err != nil {
+		return nil, err
+	}
+	return &cookie, nil
+}
+func (c *Redis) DeleteCookie(ctx context.Context, user string) {
+	c.cache.Del(ctx, user)
 }

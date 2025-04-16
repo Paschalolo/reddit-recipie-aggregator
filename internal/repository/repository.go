@@ -45,3 +45,9 @@ type AuthRepo interface {
 	FindUser(ctx context.Context, username string, hashPassword string) error
 	AddBulkAuthUser(ctx context.Context, users *[]pkg.AuthUser) error
 }
+
+type CookieCache interface {
+	PutCookie(ctx context.Context, user string, token *pkg.CookieAuthUser) error
+	GetCookie(ctx context.Context, user string) (*pkg.CookieAuthUser, error)
+	DeleteCookie(ctx context.Context, user string)
+}

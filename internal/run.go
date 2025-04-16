@@ -18,8 +18,7 @@ import (
 )
 
 func Run(router *gin.RouterGroup) {
-	authorised := router.Group("/")
-	authorised.Use(auth.AuthMiddleware())
+
 	client, _ := mongo.Connect(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	repo := mongoRepo.NewMongoDB(client)
 	AuthRepo := mongoRepo.NewAuthMongoDB(client)
@@ -27,8 +26,9 @@ func Run(router *gin.RouterGroup) {
 	cache := redis.NewRedis(repo)
 	App := application.New(repo, cache)
 	Handler := http.NewHandler(*App)
+	authorised := router.Group("/")
+	authorised.Use(auth.AuthMiddleware())
 	authHandler := auth.NewAuthHandler(AuthRepo)
-
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/recipes", Handler.ListRecipeHandler)
 	router.POST("/signin", authHandler.SignInHandler)
