@@ -1,0 +1,41 @@
+package mongo
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
+)
+
+type AuthRepository struct {
+	collection *mongo.Collection
+}
+
+var _ repository.AuthRepo = (*AuthRepository)(nil)
+
+func NewAuthMongoDB(client *mongo.Client) *AuthRepository {
+	if err := client.Ping(context.Background(), readpref.Primary()); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Connected to MONGODB ")
+	collection := client.Database(os.Getenv("MONGO_DATABASE")).Collection("users")
+	return &AuthRepository{collection: collection}
+}
+
+func (r *AuthRepository) FindUser(ctx context.Context, username string, hashPassword string) error {
+	filter := bson.M{
+		"password": hashPassword,
+		"username": username,
+	}
+	log.Println(username, hashPassword)
+	cursor := r.collection.FindOne(ctx, filter)
+	if cursor.Err() != nil {
+		// return repository.ErrAuthUser
+		return cursor.Err()
+	}
+	return nil
+}

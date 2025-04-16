@@ -13,6 +13,7 @@ var (
 	ErrNothingToUpdate = errors.New("there is nothing to update ")
 	ErrCache           = errors.New("cannot cache in cache ")
 	ErrNotInCache      = errors.New("cache is empty  ")
+	ErrAuthUser        = errors.New("invalid username or password ")
 )
 
 // This is The Repository interface implementation
@@ -38,4 +39,9 @@ type CacheRepo interface {
 
 	// Delete removes thecache located in the key position
 	Delete(ctx context.Context, key string)
+}
+
+type AuthRepo interface {
+	FindUser(ctx context.Context, username string, hashPassword string) error
+	// BulkAddUser(Users *[]auth.User) error
 }

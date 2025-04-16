@@ -1,46 +1,41 @@
 package internal
 
 import (
-	"encoding/json"
-	"log"
 	"os"
 
 	_ "github.com/Paschalolo/reddit-recipie-aggregator/docs"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/application"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/http"
-	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
+	"github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/middleware/auth"
 	mongoRepo "github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/mongo"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/redis"
-	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func AddBulkRecipe(repo repository.Repository) {
-	file, err := os.ReadFile("recipes.json")
-	if err != nil {
-		log.Fatal("could not read file", err.Error())
-	}
-	var recipe []pkg.Recipe
-	if err := json.Unmarshal(file, &recipe); err != nil {
-		log.Fatalln("could not read file ", err.Error())
-	}
-	if err := repo.BulkAddRecipe(&recipe); err != nil {
-		log.Fatalln("could not save file ", err.Error())
-	}
-}
 func Run(router *gin.RouterGroup) {
-	repo := mongoRepo.NewMongoDB()
-	// AddBulkRecipe(repo)
+	authorised := router.Group("/")
+	authorised.Use(auth.AuthMiddleware())
+	client, _ := mongo.Connect(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
+	repo := mongoRepo.NewMongoDB(client)
+	AuthRepo := mongoRepo.NewAuthMongoDB(client)
+
+	// utils.AddAuthUser(client)
 	cache := redis.NewRedis(repo)
 	App := application.New(repo, cache)
 	Handler := http.NewHandler(*App)
+	authHandler := auth.NewAuthHandler(AuthRepo)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.POST("/recipes", Handler.NewRecipeHandler)
 	router.GET("/recipes", Handler.ListRecipeHandler)
-	router.GET("/recipes/search", Handler.SearchRecipeHandler)
-	router.GET("/recipes/:id", Handler.ListOneRecipeHandler)
-	router.PUT("/recipes/:id", Handler.UpdateRecipeHandler)
-	router.DELETE("/recipes/:id", Handler.DeleteRecipeHandler)
+	router.POST("/signin", authHandler.SignInHandler)
+	router.POST("/refresh", authHandler.RefreshHandler)
+	// protected routes
+	authorised.POST("/recipes", Handler.NewRecipeHandler)
+	authorised.GET("/recipes/search", Handler.SearchRecipeHandler)
+	authorised.GET("/recipes/:id", Handler.ListOneRecipeHandler)
+	authorised.PUT("/recipes/:id", Handler.UpdateRecipeHandler)
+	authorised.DELETE("/recipes/:id", Handler.DeleteRecipeHandler)
 }

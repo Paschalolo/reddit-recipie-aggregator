@@ -9,7 +9,6 @@ import (
 	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
@@ -19,8 +18,7 @@ type Repository struct {
 
 var _ repository.Repository = (*Repository)(nil)
 
-func NewMongoDB() *Repository {
-	client, _ := mongo.Connect(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
+func NewMongoDB(client *mongo.Client) *Repository {
 	if err := client.Ping(context.Background(), readpref.Primary()); err != nil {
 		log.Fatal(err)
 	}
