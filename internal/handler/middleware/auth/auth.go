@@ -33,6 +33,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
+
 		c.Next()
 	}
 }
@@ -42,6 +43,12 @@ func NewAuthHandler(db repository.AuthRepo) *AuthHandler {
 }
 
 func (h *AuthHandler) SignInHandler(c *gin.Context) {
+	if c.GetHeader("Authorization") != "" {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "already signed in ",
+		})
+		return
+	}
 	hash := sha256.New()
 	var user user
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -56,8 +63,8 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 	err := h.db.FindUser(c.Request.Context(), user.Username, user.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
-			// "error": "Invalid username or password ",
-			"error": err.Error(),
+			"error": "Invalid username or password ",
+			// "error": err.Error(),
 		})
 		return
 	}
@@ -81,6 +88,7 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 		Token:   tokenString,
 		Expires: expirationTime,
 	}
+
 	c.JSON(http.StatusOK, jwtOutput)
 }
 
@@ -125,4 +133,8 @@ func (h *AuthHandler) RefreshHandler(c *gin.Context) {
 		Expires: expirationTime,
 	}
 	c.JSON(http.StatusOK, jwtOutput)
+}
+
+func (h *AuthHandler) SignOutHandler(c *gin.Context) {
+	// sign out on the frontend
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/middleware/auth"
 	mongoRepo "github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/mongo"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/redis"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -22,15 +23,16 @@ func Run(router *gin.RouterGroup) {
 	client, _ := mongo.Connect(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	repo := mongoRepo.NewMongoDB(client)
 	AuthRepo := mongoRepo.NewAuthMongoDB(client)
-
 	// utils.AddAuthUser(AuthRepo)
 	cache := redis.NewRedis(repo)
 	App := application.New(repo, cache)
 	Handler := http.NewHandler(*App)
 	authHandler := auth.NewAuthHandler(AuthRepo)
+
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/recipes", Handler.ListRecipeHandler)
 	router.POST("/signin", authHandler.SignInHandler)
+	router.POST("/signout", authHandler.SignOutHandler)
 	router.POST("/refresh", authHandler.RefreshHandler)
 	// protected routes
 	authorised.POST("/recipes", Handler.NewRecipeHandler)
