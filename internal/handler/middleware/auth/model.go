@@ -16,7 +16,7 @@ type jWTOutput struct {
 	Expires time.Time `json:"expires"`
 }
 
-type User struct {
+type user struct {
 	Password string `json:"password"`
 	Username string `json:"username"`
 }

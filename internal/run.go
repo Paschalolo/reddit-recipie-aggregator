@@ -23,7 +23,7 @@ func Run(router *gin.RouterGroup) {
 	repo := mongoRepo.NewMongoDB(client)
 	AuthRepo := mongoRepo.NewAuthMongoDB(client)
 
-	// utils.AddAuthUser(client)
+	// utils.AddAuthUser(AuthRepo)
 	cache := redis.NewRedis(repo)
 	App := application.New(repo, cache)
 	Handler := http.NewHandler(*App)

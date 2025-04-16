@@ -43,7 +43,7 @@ func NewAuthHandler(db repository.AuthRepo) *AuthHandler {
 
 func (h *AuthHandler) SignInHandler(c *gin.Context) {
 	hash := sha256.New()
-	var user User
+	var user user
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
