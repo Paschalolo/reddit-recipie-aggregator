@@ -14,6 +14,7 @@ var (
 	ErrCache           = errors.New("cannot cache in cache ")
 	ErrNotInCache      = errors.New("cache is empty  ")
 	ErrAuthUser        = errors.New("invalid username or password ")
+	ErrUserExist       = errors.New("username already exit  ")
 )
 
 // This is The Repository interface implementation
@@ -44,6 +45,7 @@ type CacheRepo interface {
 type AuthRepo interface {
 	FindUser(ctx context.Context, username string, hashPassword string) error
 	AddBulkAuthUser(ctx context.Context, users *[]pkg.AuthUser) error
+	AddUser(ctx context.Context, user *pkg.AuthUser) error
 }
 
 type CookieCache interface {

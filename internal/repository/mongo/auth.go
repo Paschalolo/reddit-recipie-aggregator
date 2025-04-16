@@ -35,8 +35,32 @@ func (r *AuthRepository) FindUser(ctx context.Context, username string, hashPass
 	log.Println(username, hashPassword)
 	cursor := r.collection.FindOne(ctx, filter)
 	if cursor.Err() != nil {
-		// return repository.ErrAuthUser
-		return cursor.Err()
+		return repository.ErrAuthUser
+		// return cursor.Err()
+	}
+	return nil
+}
+
+func (r *AuthRepository) checkExist(ctx context.Context, username string, hashPassword string) error {
+	filter := bson.M{
+		"username": username,
+	}
+	log.Println(username, hashPassword)
+	cursor := r.collection.FindOne(ctx, filter)
+	if cursor.Err() != nil {
+		return repository.ErrAuthUser
+		// return cursor.Err()
+	}
+	return nil
+}
+
+func (r *AuthRepository) AddUser(ctx context.Context, user *pkg.AuthUser) error {
+	if err := r.checkExist(ctx, user.Username, user.Password); err == nil {
+		return repository.ErrUserExist
+	}
+	_, err := r.collection.InsertOne(ctx, user)
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -31,6 +31,7 @@ func Run(router *gin.RouterGroup) {
 	authHandler := auth.NewAuthHandler(AuthRepo)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/recipes", Handler.ListRecipeHandler)
+	router.POST("/signup", authHandler.SignUpHandler)
 	router.POST("/signin", authHandler.SignInHandler)
 	router.POST("/signout", authHandler.SignOutHandler)
 	router.POST("/refresh", authHandler.RefreshHandler)

@@ -3,12 +3,12 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
+	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
@@ -42,6 +42,60 @@ func NewAuthHandler(db repository.AuthRepo) *AuthHandler {
 	return &AuthHandler{db: db}
 }
 
+func (h *AuthHandler) SignUpHandler(c *gin.Context) {
+	if c.GetHeader("Authorization") != "" {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "please log out",
+		})
+		return
+	}
+
+	var user pkg.AuthUser
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	hash := sha256.New()
+	hashedSting := hash.Sum([]byte(user.Password))
+	user.Password = hex.EncodeToString(hashedSting)
+
+	if err := h.db.AddUser(c.Request.Context(), &user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "cannot sign up user exists ",
+		})
+		return
+	}
+
+	// jwt response
+	expirationTime := time.Now().Add(24 * time.Hour)
+	claims := &claims{
+		Username: user.Username,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	jwtOutput := &jWTOutput{
+		Token:   tokenString,
+		Expires: expirationTime,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Added you as user ",
+		"jwtInfo": jwtOutput,
+	})
+
+}
+
 // @Summary Sign in a user
 // @Description Authenticates a user and returns a JWT token.
 // @Tags auth
@@ -70,7 +124,6 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 	}
 	hashedSting := hash.Sum([]byte(user.Password))
 	user.Password = hex.EncodeToString(hashedSting)
-	log.Println(user.Password)
 	err := h.db.FindUser(c.Request.Context(), user.Username, user.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
