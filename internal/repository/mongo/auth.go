@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
+	"github.com/Paschalolo/reddit-recipie-aggregator/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
@@ -36,6 +37,15 @@ func (r *AuthRepository) FindUser(ctx context.Context, username string, hashPass
 	if cursor.Err() != nil {
 		// return repository.ErrAuthUser
 		return cursor.Err()
+	}
+	return nil
+}
+
+func (r *AuthRepository) AddBulkAuthUser(ctx context.Context, users *[]pkg.AuthUser) error {
+	log.Println("Adding to mongo db  ")
+	_, err := r.collection.InsertMany(context.Background(), *users)
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -43,5 +43,5 @@ type CacheRepo interface {
 
 type AuthRepo interface {
 	FindUser(ctx context.Context, username string, hashPassword string) error
-	// BulkAddUser(Users *[]auth.User) error
+	AddBulkAuthUser(ctx context.Context, users *[]pkg.AuthUser) error
 }
