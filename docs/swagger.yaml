@@ -1,4 +1,20 @@
 definitions:
+  auth.jWTOutput:
+    properties:
+      expires:
+        type: string
+      token:
+        type: string
+    type: object
+  auth.user:
+    properties:
+      password:
+        description: User's password.
+        type: string
+      username:
+        description: User's username.
+        type: string
+    type: object
   pkg.Recipe:
     description: Represents a culinary recipe with a name, ingredients, and tags.
     properties:
@@ -202,4 +218,81 @@ paths:
               type: string
             type: object
       summary: Search recipes by tag
+  /refresh:
+    post:
+      description: Refreshes an expired JWT token.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token refreshed successfully
+          schema:
+            $ref: '#/definitions/auth.jWTOutput'
+        "400":
+          description: Token is not expired yet
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to generate token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh JWT token
+      tags:
+      - auth
+  /signin:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token.
+      parameters:
+      - description: User credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.user'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully signed in
+          schema:
+            $ref: '#/definitions/auth.jWTOutput'
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid username or password
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to generate token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Sign in a user
+      tags:
+      - auth
 swagger: "2.0"

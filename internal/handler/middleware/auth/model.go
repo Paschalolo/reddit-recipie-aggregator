@@ -16,7 +16,8 @@ type jWTOutput struct {
 	Expires time.Time `json:"expires"`
 }
 
+// User represents user credentials for authentication.
 type user struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Password string `json:"password"` // User's password.
+	Username string `json:"username"` // User's username.
 }

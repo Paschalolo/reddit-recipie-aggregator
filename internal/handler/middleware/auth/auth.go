@@ -42,6 +42,17 @@ func NewAuthHandler(db repository.AuthRepo) *AuthHandler {
 	return &AuthHandler{db: db}
 }
 
+// @Summary Sign in a user
+// @Description Authenticates a user and returns a JWT token.
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param   body     body    user     true  "User credentials"
+// @Success 200 {object} jWTOutput "Successfully signed in"
+// @Failure 400 {object} map[string]string "Invalid request payload"
+// @Failure 401 {object} map[string]string "Invalid username or password"
+// @Failure 500 {object} map[string]string "Failed to generate token"
+// @Router /signin [post]
 func (h *AuthHandler) SignInHandler(c *gin.Context) {
 	if c.GetHeader("Authorization") != "" {
 		c.JSON(http.StatusOK, gin.H{
@@ -92,6 +103,16 @@ func (h *AuthHandler) SignInHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, jwtOutput)
 }
 
+// @Summary Refresh JWT token
+// @Description Refreshes an expired JWT token.
+// @Tags auth
+// @Produce json
+// @Param   Authorization   header   string    true  "Bearer token"
+// @Success 200 {object} jWTOutput "Token refreshed successfully"
+// @Failure 401 {object} map[string]string "Invalid token"
+// @Failure 400 {object} map[string]string "Token is not expired yet"
+// @Failure 500 {object} map[string]string "Failed to generate token"
+// @Router /refresh [post]
 func (h *AuthHandler) RefreshHandler(c *gin.Context) {
 	tokenValue := c.GetHeader("Authorization")
 	claims := &claims{}

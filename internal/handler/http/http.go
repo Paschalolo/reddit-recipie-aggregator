@@ -7,8 +7,11 @@
 // @contact.name Paschal Ahanmisi
 // @contact.email pastechnology1@gmail.com
 
-// @host localhost:8081
+// @host localhost:8080
 // @BasePath /api/v1
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 // @schemes http
 // @produce application/json
