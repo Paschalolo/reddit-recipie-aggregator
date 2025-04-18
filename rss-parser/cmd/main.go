@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/Paschalolo/reddit-recipie-aggregator/rss-parser/internal"
+	RSS_Parser "github.com/Paschalolo/reddit-recipie-aggregator/rss-parser/internal"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
-
-	router.POST("/parse", internal.ParseHandler)
-	router.Run(":8081")
+	RSS_Parser.Run(router)
+	router.Run(":8051")
 }
