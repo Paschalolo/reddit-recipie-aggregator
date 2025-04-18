@@ -9,6 +9,7 @@ import (
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/handler/middleware/auth"
 	mongoRepo "github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/mongo"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/redis"
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -18,7 +19,7 @@ import (
 )
 
 func Run(router *gin.RouterGroup) {
-
+	router.Use(cors.Default())
 	client, _ := mongo.Connect(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	repo := mongoRepo.NewMongoDB(client)
 	AuthRepo := mongoRepo.NewAuthMongoDB(client)
