@@ -9,5 +9,5 @@ benchmark :
     ab -n 5000 -c 200 -g with-cache.data http://localhost:8081/api/v1/recipes
 
 run : 
-    JWT_SECRET=B1OZ2f3pQJzGS2ctvmt5zQ== MONGO_URI=mongodb://myuser:mypassword@localhost:27017/ MONGO_DATABASE=demo go run cmd/*.go   
+   REDIS_URI=localhost:6379  JWT_SECRET=B1OZ2f3pQJzGS2ctvmt5zQ== MONGO_URI=mongodb://myuser:mypassword@localhost:27017/ MONGO_DATABASE=demo go run cmd/*.go   
 

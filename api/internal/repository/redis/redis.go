@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 	"time"
 
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository"
@@ -20,7 +21,7 @@ var _ repository.CacheRepo = (*Redis)(nil)
 
 func NewRedis(db repository.Repository) *Redis {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("REDIS_URI"),
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
