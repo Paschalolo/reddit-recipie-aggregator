@@ -23,14 +23,14 @@ func (h *Handler) ParseHandler(c *gin.Context) {
 		})
 		return
 	}
-	if err := h.App.InsertOne(c.Request.Context(), request.URL); err != nil {
+	if err := h.App.PushToQueue(&request); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Error while parsing rss feed ",
+			"error": "Error while publish to Rabbit mq ",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Succesfully added to database ",
+		"message": "Success ",
 	})
 }
