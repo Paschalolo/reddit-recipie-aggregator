@@ -19,6 +19,7 @@ type App interface {
 }
 type AppProducer interface {
 	PushToQueue(request *pkg.Request) error
+	FindRecipes(ctx context.Context) (*[]pkg.Entry, error)
 }
 type AppConsumer interface {
 	ConsumeQueue(ctx context.Context)
@@ -43,6 +44,9 @@ func (a *Application) InsertOne(ctx context.Context, url string) error {
 	return nil
 }
 
+func (a *Application) FindRecipes(ctx context.Context) (*[]pkg.Entry, error) {
+	return a.db.FindAll(ctx)
+}
 func (a *Application) PushToQueue(request *pkg.Request) error {
 	data, err := json.Marshal(request)
 	if err != nil {

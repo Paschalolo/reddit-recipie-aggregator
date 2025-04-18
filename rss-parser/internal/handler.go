@@ -34,3 +34,14 @@ func (h *Handler) ParseHandler(c *gin.Context) {
 		"message": "Success ",
 	})
 }
+
+func (h *Handler) GetRecipesHandler(c *gin.Context) {
+	recipes, err := h.App.FindRecipes(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "could not get recipes",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, recipes)
+}

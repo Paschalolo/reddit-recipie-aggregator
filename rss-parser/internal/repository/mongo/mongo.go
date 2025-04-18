@@ -7,6 +7,7 @@ import (
 
 	"github.com/Paschalolo/reddit-recipie-aggregator/rss-parser/internal/repository"
 	"github.com/Paschalolo/reddit-recipie-aggregator/rss-parser/pkg"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
@@ -33,4 +34,18 @@ func (m *MongoRepository) AddOne(ctx context.Context, entry *pkg.Entry) error {
 		return err
 	}
 	return nil
+}
+
+func (m *MongoRepository) FindAll(ctx context.Context) (*[]pkg.Entry, error) {
+	filter := bson.M{}
+	var result = []pkg.Entry{}
+	cursor, err := m.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	if err = cursor.All(ctx, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

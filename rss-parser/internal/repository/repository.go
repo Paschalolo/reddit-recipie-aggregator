@@ -9,6 +9,7 @@ import (
 
 type Repository interface {
 	AddOne(ctx context.Context, entry *pkg.Entry) error
+	FindAll(ctx context.Context) (*[]pkg.Entry, error)
 }
 
 type Queue interface {
