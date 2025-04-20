@@ -10,6 +10,7 @@ import (
 	mongoRepo "github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/mongo"
 	"github.com/Paschalolo/reddit-recipie-aggregator/internal/repository/redis"
 	"github.com/gin-contrib/cors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -31,6 +32,7 @@ func Run(router *gin.RouterGroup) {
 	authorised.Use(auth.AuthMiddleware())
 	authHandler := auth.NewAuthHandler(AuthRepo)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/prometheus", gin.WrapH(promhttp.Handler()))
 	router.GET("/recipes", Handler.ListRecipeHandler)
 	router.POST("/signup", authHandler.SignUpHandler)
 	router.POST("/signin", authHandler.SignInHandler)

@@ -1,6 +1,6 @@
 services:
   api:
-    image: paschalolo/recipes-api:1.0.0
+    image: recipes-api
     environment:
       - MONGO_URI=mongodb://myuser:mypassword@mongodb:27017/ # THIS IS THE CORRECTED LINE
       - MONGO_DATABASE=demo
