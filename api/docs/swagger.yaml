@@ -1,0 +1,298 @@
+definitions:
+  auth.jWTOutput:
+    properties:
+      expires:
+        type: string
+      token:
+        type: string
+    type: object
+  auth.user:
+    properties:
+      password:
+        description: User's password.
+        type: string
+      username:
+        description: User's username.
+        type: string
+    type: object
+  pkg.Recipe:
+    description: Represents a culinary recipe with a name, ingredients, and tags.
+    properties:
+      id:
+        description: |-
+          ID of the recipe.
+          @Example 123ojwfnowndno
+        type: string
+      ingredients:
+        description: |-
+          List of ingredients required for the recipe.
+          @Example ["pasta", "tomato sauce", "cheese"]
+        items:
+          type: string
+        type: array
+      instructions:
+        description: |-
+          Instructions associated with the recipe.
+          @Example ["To marinate the chicken", "Add scallion whites, and cook, stirring"]
+        items:
+          type: string
+        type: array
+      name:
+        description: |-
+          Name of the recipe.
+          @Example Delicious Pasta
+        type: string
+      publishedAt:
+        description: |-
+          Time of  the recipe added or updated .
+          @Example "2021-01-17T19:28:52.803062+01:00"
+        type: string
+      tags:
+        description: |-
+          Tags associated with the recipe.
+          @Example ["italian", "dinner"]
+        items:
+          type: string
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /recipes:
+    get:
+      description: Get a list of all available recipes.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/pkg.Recipe'
+            type: array
+      summary: Get all recipes
+    post:
+      consumes:
+      - application/json
+      description: Create a new recipe.
+      parameters:
+      - description: Recipe object to be created
+        in: body
+        name: recipe
+        required: true
+        schema:
+          $ref: '#/definitions/pkg.Recipe'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pkg.Recipe'
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new recipe
+  /recipes/{id}:
+    delete:
+      description: Delete a recipe that contains a specific id.
+      parameters:
+      - description: ID of the recipe to delete
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Recipe not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete recipes by id
+    get:
+      consumes:
+      - application/json
+      description: Return a recipe that contains a specific id.
+      parameters:
+      - description: ID of the recipe to list
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Recipe object to be updated
+        in: body
+        name: recipe
+        required: true
+        schema:
+          $ref: '#/definitions/pkg.Recipe'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pkg.Recipe'
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Recipe not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Return recipes by id
+    put:
+      consumes:
+      - application/json
+      description: Update a recipe that contains a specific id.
+      parameters:
+      - description: ID of the recipe to update
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Recipe object to be updated
+        in: body
+        name: recipe
+        required: true
+        schema:
+          $ref: '#/definitions/pkg.Recipe'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/pkg.Recipe'
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Recipe not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update recipes by id
+  /recipes/search:
+    get:
+      description: Search for recipes that contain a specific tag.
+      parameters:
+      - description: Tag to search for
+        in: query
+        name: tag
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/pkg.Recipe'
+            type: array
+        "404":
+          description: No recipes found with that tag
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search recipes by tag
+  /refresh:
+    post:
+      description: Refreshes an expired JWT token.
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token refreshed successfully
+          schema:
+            $ref: '#/definitions/auth.jWTOutput'
+        "400":
+          description: Token is not expired yet
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to generate token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refresh JWT token
+      tags:
+      - auth
+  /signin:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token.
+      parameters:
+      - description: User credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.user'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully signed in
+          schema:
+            $ref: '#/definitions/auth.jWTOutput'
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid username or password
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to generate token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Sign in a user
+      tags:
+      - auth
+swagger: "2.0"

@@ -1,0 +1,41 @@
+services:
+  api:
+    image: recipes-api
+    environment:
+      - MONGO_URI=mongodb://myuser:mypassword@mongodb:27017/ # THIS IS THE CORRECTED LINE
+      - MONGO_DATABASE=demo
+      - JWT_SECRET=B1OZ2f3pQJzGS2ctvmt5zQ==
+      - REDIS_URI=redis:6379
+    networks:
+      - api_network
+    depends_on: # Use depends_on instead of external_links
+      - mongodb
+      - redis
+    scale: 5
+
+  redis:
+    image: redis
+    networks:
+      - api_network
+
+  mongodb:
+    image: mongo:latest
+    networks:
+      - api_network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=myuser
+      - MONGO_INITDB_ROOT_PASSWORD=mypassword
+
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - $PWD/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+    networks:
+      - api_network
+
+networks:
+  api_network:
